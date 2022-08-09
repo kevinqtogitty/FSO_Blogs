@@ -23,8 +23,27 @@ const create = async (newObject) => {
 };
 
 const update = (id, newObject) => {
-  const request = axios.put(`${baseUrl}/${id}`, newObject);
+  const updatedBlog = {
+    author: newObject.author,
+    likes: newObject.likes + 1,
+    title: newObject.title,
+    url: newObject.url,
+    user: newObject.user,
+  };
+
+  const request = axios.put(`${baseUrl}/${id}`, updatedBlog);
   return request.then((response) => response.data);
 };
 
-export default { getAll, setToken, create, update };
+const remove = async (id, object) => {
+  if (
+    window.confirm(
+      `Are you sure you want to delete ${object.title} by ${object.author} ?`
+    )
+  ) {
+    const request = await axios.delete(`${baseUrl}/${id}`);
+    return request.data;
+  }
+};
+
+export default { getAll, setToken, create, update, remove };

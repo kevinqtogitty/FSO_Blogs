@@ -14,11 +14,6 @@ const App = () => {
   const [message, setMessage] = useState(null);
   const [user, setUser] = useState(null);
 
-  const [title, setTitle] = useState("");
-  const [author, setAuthor] = useState("");
-  const [url, setUrl] = useState("");
-  const [likes, setLikes] = useState("");
-
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
   }, []);
@@ -57,6 +52,12 @@ const App = () => {
     setUser(null);
   };
 
+  const sortByLikes = () => {
+    const sortedArray = blogs.map((blog) => blog);
+    sortedArray.sort((a, b) => b.likes - a.likes);
+    setBlogs(sortedArray);
+  };
+
   const blogFormRef = useRef();
 
   return (
@@ -64,7 +65,7 @@ const App = () => {
       <h2>blogs</h2>
       <Message message={message} setMessage={setMessage} />
       {user === null ? (
-        <Togglable buttonLabel="login">
+        <Togglable showButtonLabel="login" hideButtonLabel="cancel">
           <Login
             setPassword={setPassword}
             password={password}
@@ -78,24 +79,24 @@ const App = () => {
           <p>
             {user.name} is logged in! <button onClick={logout}>Logout</button>
           </p>
-          <Togglable buttonLabel="New Blog" ref={blogFormRef}>
+          <Togglable
+            showButtonLabel="New Blog"
+            hideButtonLabel="Cancel"
+            ref={blogFormRef}
+          >
             <CreateNewBlog
               blogService={blogService}
-              setTitle={setTitle}
-              setAuthor={setAuthor}
-              setUrl={setUrl}
-              setLikes={setLikes}
               setBlogs={setBlogs}
               setMessage={setMessage}
-              message={message}
-              title={title}
-              author={author}
-              url={url}
-              likes={likes}
+              blogFormRef={blogFormRef}
             />
           </Togglable>
           <br />
-          <Blog blogs={blogs} user={user} />
+          <Blog
+            blogs={blogs}
+            blogService={blogService}
+            sortByLikes={sortByLikes}
+          />
         </div>
       )}
     </div>
